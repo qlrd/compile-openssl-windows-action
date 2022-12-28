@@ -17,14 +17,17 @@ runs:
       uses: shogo82148/actions-setup-perl@v1
 
     - name: Clone openssl
+      shell: pwsh
       run: |
         git clone https://github.com/openssl/openssl.git
 
-    - name: Prepare the build directory
+    - name: Prepare the build directory 
+      shell: pwsh
       working-directory: openssl
       run: mkdir _build
     
     - name: Config plain
+      shell: pwsh
       working-directory: openssl/_build
       if: ${{ input.build-type === 'plain' }}
       run: |
@@ -32,16 +35,19 @@ runs:
         perl configdata.pm --dump
     
     - name: Build plain
+      shell: pwsh
       working-directory: openssl/_build
       if: ${{ input.build-type === 'plain' }}
       run: nmake /S
 
     - name: Test plain
+      shell: pwsh
       working-directory: openssl/_build
       if: ${{ input.build-type === 'plain' }}
       run: nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
 
     - name: Config minimal
+      shell: pwsh
       working-directory: openssl/_build
       if: ${{ input.build-type === 'minimal' }}
       run: |
@@ -49,11 +55,13 @@ runs:
         perl configdata.pm --dump
 
     - name: Build minimal
+      shell: pwsh
       working-directory: openssl/_build 
       if: ${{ input.build-type === 'minimal' }}
       run: nmake
 
     - name: Test minimal
+      shell: pwsh
       working-directory: openssl/_build
       if: ${{ input.build-type === 'minimal' }}
       run: nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
