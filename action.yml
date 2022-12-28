@@ -1,0 +1,59 @@
+name: 'Openssl Windows compiler action'
+description: 'Get some parameters to compilation and compiles Opessl'
+
+inputs:
+  build-type:
+    description: 'can be "plain" or "minimal"'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Install MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+    
+    - name: Setup Perl
+      uses: shogo82148/actions-setup-perl@v1
+
+    - name: Clone openssl
+      run: |
+        git clone https://github.com/openssl/openssl.git
+
+    - name: Prepare the build directory
+      working-directory: openssl
+      run: mkdir _build
+    
+    - name: Config plain
+      working-directory: openssl/_build
+      if: ${{ input.build-type === 'plain' }}
+      run: |
+        perl ..\Configure --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
+        perl configdata.pm --dump
+    
+    - name: Build plain
+      working-directory: openssl/_build
+      if: ${{ input.build-type === 'plain' }}
+      run: nmake /S
+
+    - name: Test plain
+      working-directory: openssl/_build
+      if: ${{ input.build-type === 'plain' }}
+      run: nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
+
+    - name: Config minimal
+      working-directory: openssl/_build
+      if: ${{ input.build-type === 'minimal' }}
+      run: |
+        perl ..\Configure --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
+        perl configdata.pm --dump
+
+    - name: Build minimal
+      working-directory: openssl/_build 
+      if: ${{ input.build-type === 'minimal' }}
+      run: nmake
+
+    - name: Test minimal
+      working-directory: openssl/_build
+      if: ${{ input.build-type === 'minimal' }}
+      run: nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
