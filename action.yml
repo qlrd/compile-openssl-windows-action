@@ -29,7 +29,7 @@ runs:
     - name: Config plain
       shell: pwsh
       working-directory: openssl/_build
-      if: ${{ inputs.build-type === 'plain' }}
+      if: ${{ inputs.build-type == 'plain' }}
       run: |
         perl ..\Configure --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
         perl configdata.pm --dump
@@ -37,19 +37,19 @@ runs:
     - name: Build plain
       shell: pwsh
       working-directory: openssl/_build
-      if: ${{ inputs.build-type === 'plain' }}
+      if: ${{ inputs.build-type == 'plain' }}
       run: nmake /S
 
     - name: Test plain
       shell: pwsh
       working-directory: openssl/_build
-      if: ${{ inputs.build-type === 'plain' }}
+      if: ${{ inputs.build-type == 'plain' }}
       run: nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
 
     - name: Config minimal
       shell: pwsh
       working-directory: openssl/_build
-      if: ${{ inputs.build-type === 'minimal' }}
+      if: ${{ inputs.build-type == 'minimal' }}
       run: |
         perl ..\Configure --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
         perl configdata.pm --dump
@@ -57,11 +57,11 @@ runs:
     - name: Build minimal
       shell: pwsh
       working-directory: openssl/_build 
-      if: ${{ inputs.build-type === 'minimal' }}
+      if: ${{ inputs.build-type == 'minimal' }}
       run: nmake
 
     - name: Test minimal
       shell: pwsh
       working-directory: openssl/_build
-      if: ${{ inputs.build-type === 'minimal' }}
+      if: ${{ inputs.build-type == 'minimal' }}
       run: nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
