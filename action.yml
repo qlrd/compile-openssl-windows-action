@@ -36,8 +36,7 @@ runs:
 
     - name: Clone openssl
       shell: pwsh
-      run: |
-        git clone https://github.com/openssl/openssl.git
+      run: git clone https://github.com/openssl/openssl.git
 
     - name: Prepare the build directory 
       shell: pwsh
@@ -88,9 +87,21 @@ runs:
       id: set-version
       shell: pwsh
       working-directory: openssl/apps
-      run: echo "openssl-version="$(openssl.exe version) >> $GITHUB_OUTPUT
+      run: |
+        $opensslExeVersion = (openssl.exe version)
+        echo "openssl-version=$( $opensslExeVersion )" >> $GITHUB_OUTPUT
 
     - name: Set openssl.exe path output
       id: set-path
       shell: pwsh
-      run: echo "openssl-path="$GITHUB_WORKSPACE\openssl\apps\openssl.exe >> $GITHUB_OUTPUT
+      run: |
+        $opensslExePath = (echo $GITHUB_WORKSPACE\openssl\apps\openssl.exe)
+        echo "openssl-path=$( $opensslExePath )" >> $GITHUB_OUTPUT
+
+    - name: Get openssl.exe version output
+      shell: pwsh
+      run: echo ${{ steps.set-version.outputs.openssl-version }}
+
+    - name: Get openssl.exe path output
+      shell: pwsh
+      run: echo ${{ steps.set-version.outputs.openssl-path }}

@@ -12,18 +12,21 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    outputs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       
-      - name: Build openssl with plain config
-        id: build-plain
+      - name: Build openssl
+        id: build
         uses: ./
         with:
           build-type: ${{ matrix.build-type }}
 
       - name: Check version
-        run: echo ${{ steps.build-plain.outputs.openssl-version }}
+        shell: pwsh
+        run: echo "OPENSSL VERSION FROM TEST: "${{ steps.build.outputs.openssl-version }}
 
       - name: Check executable path
-        run: echo ${{ steps.build-plain.outputs.openssl-path }}
+        shell: pwsh
+        run: echo "OPENSSL PATH FROM TEST: " ${{ steps.build.outputs.openssl-path }}
