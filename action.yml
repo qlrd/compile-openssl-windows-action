@@ -88,20 +88,12 @@ runs:
       shell: pwsh
       working-directory: openssl/apps
       run: |
-        $opensslExeVersion = (openssl.exe version)
+        openssl.exe version | Tee-Object -Variable opensslExeVersion
         echo "openssl-version=$( $opensslExeVersion )" >> $GITHUB_OUTPUT
 
     - name: Set openssl.exe path output
       id: set-path
       shell: pwsh
       run: |
-        $opensslExePath = (echo $GITHUB_WORKSPACE\openssl\apps\openssl.exe)
+        echo $GITHUB_WORKSPACE\openssl\apps\openssl.exe | Tee-Object opensslExePath
         echo "openssl-path=$( $opensslExePath )" >> $GITHUB_OUTPUT
-
-    - name: Get openssl.exe version output
-      shell: pwsh
-      run: echo ${{ steps.set-version.outputs.openssl-version }}
-
-    - name: Get openssl.exe path output
-      shell: pwsh
-      run: echo ${{ steps.set-version.outputs.openssl-path }}
