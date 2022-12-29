@@ -3,11 +3,12 @@ on: [push]
 jobs:
   test:
     strategy:
-      build-type:
-        - plain
-        - minimal
-      os: 
-        - windows-latest
+      matrix:
+        build-type:
+          - plain
+          - minimal
+        os: 
+          - windows-latest
 
     runs-on: ${{ matrix.os }}
 
