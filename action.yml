@@ -93,6 +93,6 @@ runs:
       working-directory: openssl/apps
       run: |
         $opensslExeVersion = openssl.exe version
-        $opensslExePathDir = $env:GITHUB_WORKSPACE\openssl\apps 
+        $opensslExePathDir = echo $env:GITHUB_WORKSPACE\openssl\apps
         echo "openssl-version=${opensslExeVersion}" >> $env:GITHUB_OUTPUT
         echo "openssl-path-dir=${opensslExePathDir}" >> $env:GITHUB_OUTPUT
