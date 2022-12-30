@@ -27,12 +27,12 @@ jobs:
         run: |
           echo "${{ steps.build.outputs.openssl-version }} is at ${{ steps.build.outputs.openssl-path-dir }}"
 
-      - name: Test funtionality I: generate hex string
+      - name: Test funtionality I (generate hex string)
         shell: pwsh
         working-directory: ${{ steps.build.outputs.openssl-path-dir }}
         run: openssl.exe rand -hex 16
 
-      - name: Test funtionality II: generate base64 string
+      - name: Test funtionality II (generate base64 string)
         shell: pwsh
         working-directory: ${{ steps.build.outputs.openssl-path-dir }}
         run: openssl.exe rand -base64 16
