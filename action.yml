@@ -20,9 +20,9 @@ outputs:
   openssl-version:
     description: 'version of built openssl.exe'
     value: ${{ steps.set-version.outputs.openssl-version }}
-  openssl-path:
-    description: 'path of built openssl.exe'
-    value: ${{ steps.set-path.outputs.openssl-path }}
+  openssl-path-dir:
+    description: "built openssl.exe's path dir" 
+    value: ${{ steps.set-path.outputs.openssl-path-dir }}
 
 runs:
   using: 'composite'
@@ -83,17 +83,16 @@ runs:
       if: ${{ inputs.build-type == 'minimal' }}
       run: nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
 
-    - name: Set version output
-      id: set-version
+    # How do I capture the output
+    # into a variable from an external
+    # process in PowerShell
+    # SEE https://stackoverflow.com/questions/8097354/how-do-i-capture-the-output-into-a-variable-from-an-external-process-in-powershe
+    - name: Set outputs
+      id: set-outputs
       shell: pwsh
       working-directory: openssl/apps
       run: |
-        openssl.exe version | Tee-Object -Variable opensslExeVersion
+        $opensslExeVersion = openssl.exe version
+        $opensslExePathDir = $env:GITHUB_WORKSPACE\openssl\apps 
         echo "openssl-version=${opensslExeVersion}" >> $env:GITHUB_OUTPUT
-
-    - name: Set openssl.exe path output
-      id: set-path
-      shell: pwsh
-      run: |
-        echo $env:GITHUB_WORKSPACE\openssl\apps\openssl.exe | Tee-Object opensslExePath
-        echo "openssl-path=${opensslExePath}" >> $env:GITHUB_OUTPUT
+        echo "openssl-path-dir=${opensslExePathDir}" >> $env:GITHUB_OUTPUT
