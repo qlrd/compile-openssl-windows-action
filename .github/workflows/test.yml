@@ -24,8 +24,8 @@ jobs:
 
       - name: Check version
         shell: pwsh
-        run: echo ${{ steps.build.outputs.openssl-version }}
+        run: echo "${{ steps.build.outputs.openssl-version }}"
 
       - name: Check executable path
         shell: pwsh
-        run: echo ${{ steps.build.outputs.openssl-path }}
+        run: echo "${{ steps.build.outputs.openssl-path }}"
