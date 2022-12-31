@@ -24,11 +24,11 @@ jobs:
 
       - name: Check the existence of generated openssl.exe
         shell: pwsh
-        run: ls ${{ steps.build.outputs.built-openssl-path }}
+        run: ls ${{ steps.build.outputs.built-openssl-path }}\openssl.exe
       
-          #- name: Test functionality I (get version)
-          #shell: pwsh
-          #run: $Env:BUILT_OPENSSL_PATH\openssl.exe version
+      - name: Test functionality I (get version)
+        shell: pwsh
+        run: ${{ steps.build.outputs.built-openssl-path }}\openssl.exe version
       
           #- name: Test functionality II (generate hex string)
           #shell: pwsh
