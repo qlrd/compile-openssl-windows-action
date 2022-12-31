@@ -24,7 +24,7 @@ jobs:
 
       - name: Test functionality I (get version)
         shell: pwsh
-        working-dirrectory: $Env:BUILT_OPENSSL_PATH
+        working-directory: $Env:BUILT_OPENSSL_PATH
         run: openssl.exe version
       
       - name: Test functionality II (generate hex string)
