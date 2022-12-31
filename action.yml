@@ -17,12 +17,9 @@ inputs:
     required: true
 
 outputs:
-  openssl-version:
-    description: 'version of built openssl.exe'
-    value: ${{ steps.set-version.outputs.openssl-version }}
   openssl-path-dir:
     description: "built openssl.exe's path dir" 
-    value: ${{ steps.set-path.outputs.openssl-path-dir }}
+    value: ${{ steps.set-output-dir.outputs.openssl-path-dir }}
 
 runs:
   using: 'composite'
@@ -67,12 +64,10 @@ runs:
     # into a variable from an external
     # process in PowerShell
     # SEE https://stackoverflow.com/questions/8097354/how-do-i-capture-the-output-into-a-variable-from-an-external-process-in-powershe
-    - name: Set outputs
-      id: set-outputs
+    - name: Set output dir
+      id: set-output-dir
       shell: pwsh
       working-directory: openssl/apps
       run: |
-        openssl.exe version | Tee-Object -Variable opensslExeVersion
-        echo "${env:GITHUB_WORKSPACE}\\openssl\\apps" | Tee-Object -Variable opensslExePathDir
-        echo "openssl-version=${opensslExeVersion}" >> $env:GITHUB_OUTPUT
-        echo "openssl-path-dir=${opensslExePathDir}" >> $env:GITHUB_OUTPUT
+        $opensslExePathDir = (pwd)
+        echo "openssl-path-dir=$opensslExePathDir" >> $env:GITHUB_OUTPUT

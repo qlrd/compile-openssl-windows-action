@@ -22,15 +22,14 @@ jobs:
         with:
           build-type: ${{ matrix.build-type }}
 
-      - name: Check outputs
+      - name: Test functionality I (get version)
         shell: pwsh
-        run: |
-          echo "${{ steps.build.outputs.openssl-version }} is at ${{ steps.build.outputs.openssl-path-dir }}"
-
-      - name: Test funtionality I (generate hex string)
+        run: ${{ steps.build.outputs.openssl-path-dir }}\openssl.exe version
+      
+      - name: Test functionality II (generate hex string)
         shell: pwsh
         run: ${{ steps.build.outputs.openssl-path-dir }}\openssl.exe rand -hex 16
 
-      - name: Test funtionality II (generate base64 string)
+      - name: Test functionality III (generate base64 string)
         shell: pwsh
         run: ${{ steps.build.outputs.openssl-path-dir }}\openssl.exe rand -base64 16
