@@ -24,15 +24,15 @@ jobs:
 
       - name: Test functionality I (get version)
         shell: pwsh
-        working-dir: $Env:BUILT_OPENSSL_PATH
+        working-dirrectory: $Env:BUILT_OPENSSL_PATH
         run: openssl.exe version
       
       - name: Test functionality II (generate hex string)
         shell: pwsh
-        working-dir: $Env:BUILT_OPENSSL_PATH
+        working-directory: $Env:BUILT_OPENSSL_PATH
         run: openssl.exe rand -hex 16
 
       - name: Test functionality III (generate base64 string)
         shell: pwsh
-        working-dir: $Env:BUILT_OPENSSL_PATH
+        working-directory: $Env:BUILT_OPENSSL_PATH
         run: openssl.exe rand -base64 16
