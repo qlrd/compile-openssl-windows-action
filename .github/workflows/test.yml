@@ -22,14 +22,18 @@ jobs:
         with:
           build-type: ${{ matrix.build-type }}
 
-      - name: Test functionality I (get version)
+      - name: Check the existence of generated openssl.exe
         shell: pwsh
-        run: $Env:BUILT_OPENSSL_PATH\openssl.exe version
+        run: ls ${{ steps.build.outputs.built-openssl-path }}
       
-      - name: Test functionality II (generate hex string)
-        shell: pwsh
-        run: $Env:BUILT_OPENSSL_PATH\openssl.exe rand -hex 16
+          #- name: Test functionality I (get version)
+          #shell: pwsh
+          #run: $Env:BUILT_OPENSSL_PATH\openssl.exe version
+      
+          #- name: Test functionality II (generate hex string)
+          #shell: pwsh
+          #run: $Env:BUILT_OPENSSL_PATH\openssl.exe rand -hex 16
 
-      - name: Test functionality III (generate base64 string)
-        shell: pwsh
-        run: $Env:BUILT_OPENSSL_PATH\openssl.exe rand -base64 16
+          #- name: Test functionality III (generate base64 string)
+          #shell: pwsh
+          #run: $Env:BUILT_OPENSSL_PATH\openssl.exe rand -base64 16

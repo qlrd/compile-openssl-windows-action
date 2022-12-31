@@ -16,6 +16,11 @@ inputs:
     description: 'can be "plain" or "minimal"'
     required: true
 
+outputs:
+  built-openssl-path:
+    description: 'path where the built openssl is located'
+    value: ${{ steps.built-openssl-path.outputs.built-openssl-path }}
+
 runs:
   using: 'composite'
   steps:
@@ -58,9 +63,9 @@ runs:
     # Set environment variable in windows
     # https://www.jamescroft.co.uk/setting-github-actions-environment-variables-in-powershell/
     - name: Set openssl path dir
-      id: set-output-dir
+      id: built-openssl-path
       shell: pwsh
       working-directory: openssl/apps
       run: |
         $opensslPath = Get-Location
-        echo "BUILT_OPENSSL_PATH=$opensslPath" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        echo "built-openssl-path=$opensslPath" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
