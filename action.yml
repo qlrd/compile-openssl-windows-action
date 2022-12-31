@@ -16,11 +16,6 @@ inputs:
     description: 'can be "plain" or "minimal"'
     required: true
 
-outputs:
-  openssl-path-dir:
-    description: "built openssl.exe's path dir" 
-    value: ${{ steps.set-output-dir.outputs.openssl-path-dir }}
-
 runs:
   using: 'composite'
   steps:
@@ -60,14 +55,12 @@ runs:
         nmake
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
 
-    # How do I capture the output
-    # into a variable from an external
-    # process in PowerShell
-    # SEE https://stackoverflow.com/questions/8097354/how-do-i-capture-the-output-into-a-variable-from-an-external-process-in-powershe
-    - name: Set output dir
+    # Set environment variable in windows
+    # https://www.jamescroft.co.uk/setting-github-actions-environment-variables-in-powershell/
+    - name: Set openssl path dir
       id: set-output-dir
       shell: pwsh
       working-directory: openssl/apps
       run: |
-        $opensslExePathDir = (pwd)
-        echo "openssl-path-dir=$opensslExePathDir" >> $env:GITHUB_OUTPUT
+        $opensslPath = Get-Location
+        echo "BUILT_OPENSSL_PATH=$opensslPath" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
