@@ -29,10 +29,8 @@ jobs:
 
       - name: Test funtionality I (generate hex string)
         shell: pwsh
-        working-directory: ${{ steps.build.outputs.openssl-path-dir }}
-        run: openssl.exe rand -hex 16
+        run: ${{ steps.build.outputs.openssl-path-dir }}\openssl.exe rand -hex 16
 
       - name: Test funtionality II (generate base64 string)
         shell: pwsh
-        working-directory: ${{ steps.build.outputs.openssl-path-dir }}
-        run: openssl.exe rand -base64 16
+        run: ${{ steps.build.outputs.openssl-path-dir }}\openssl.exe rand -base64 16

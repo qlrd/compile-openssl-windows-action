@@ -43,45 +43,25 @@ runs:
       working-directory: openssl
       run: mkdir _build
     
-    - name: Config plain
+    - name: Configure, build and test plain
       shell: pwsh
       working-directory: openssl/_build
       if: ${{ inputs.build-type == 'plain' }}
-      run: |
+      run: | 
         perl ..\Configure --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
         perl configdata.pm --dump
-    
-    - name: Build plain
-      shell: pwsh
-      working-directory: openssl/_build
-      if: ${{ inputs.build-type == 'plain' }}
-      run: nmake /S
+        nmake /S
+        nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
 
-    - name: Test plain
-      shell: pwsh
-      working-directory: openssl/_build
-      if: ${{ inputs.build-type == 'plain' }}
-      run: nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
-
-    - name: Config minimal
+    - name: Configure, build and test minimal
       shell: pwsh
       working-directory: openssl/_build
       if: ${{ inputs.build-type == 'minimal' }}
       run: |
         perl ..\Configure --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
         perl configdata.pm --dump
-
-    - name: Build minimal
-      shell: pwsh
-      working-directory: openssl/_build 
-      if: ${{ inputs.build-type == 'minimal' }}
-      run: nmake
-
-    - name: Test minimal
-      shell: pwsh
-      working-directory: openssl/_build
-      if: ${{ inputs.build-type == 'minimal' }}
-      run: nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
+        nmake
+        nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
 
     # How do I capture the output
     # into a variable from an external
@@ -92,7 +72,7 @@ runs:
       shell: pwsh
       working-directory: openssl/apps
       run: |
-        $opensslExeVersion = openssl.exe version
-        $opensslExePathDir = echo $env:GITHUB_WORKSPACE\openssl\apps
+        openssl.exe version | Tee-Object -Variable opensslExeVersion
+        echo "${env:GITHUB_WORKSPACE}\\openssl\\apps" | Tee-Object -Variable opensslExePathDir
         echo "openssl-version=${opensslExeVersion}" >> $env:GITHUB_OUTPUT
         echo "openssl-path-dir=${opensslExePathDir}" >> $env:GITHUB_OUTPUT
