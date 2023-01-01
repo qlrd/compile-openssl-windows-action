@@ -47,7 +47,7 @@ runs:
     
     - name: Checkout openssl at specific tag
       shell: pwsh
-      working-directory: opensll
+      working-directory: openssl
       run: |
         git fetch --all --tags
         git checkout tags/${{ inputs.version }}
