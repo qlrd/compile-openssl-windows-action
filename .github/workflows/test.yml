@@ -23,8 +23,8 @@ jobs:
         shell: pwsh
         run: |
           $loc = Get-Location
-          echo "prefix=$loc\\OpenSSL" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
-          echo "openssldir=$loc\\OpenSSL\\CommonFiles" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "prefix=$loc\customSSL" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "openssldir=$loc\customSSL\CommonFiles" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Make folders to custom install
         shell: pwsh
