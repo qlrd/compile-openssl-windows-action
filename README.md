@@ -48,7 +48,7 @@ jobs:
 
       - name: Build openssl
         id: build
-        uses: compile-openssl-windows-action@v0.0.1
+        uses: qlrd/compile-openssl-windows-action@v0.0.1
         with:
           version: openssl-3.1.0-beta1
           prefix: ${{ steps.custom.outputs.prefix }}
