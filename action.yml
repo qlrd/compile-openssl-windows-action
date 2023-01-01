@@ -12,6 +12,12 @@ name: 'Openssl Windows compiler action'
 description: 'Compiles the openssl from https://github.com/openssl/openssl to use openssl.exe as built-in executable on softwares that depends of it functionalities'
 
 inputs:
+  prefix:
+    description: 'The top of the installation directory tree'
+    required: true
+  openssldir:
+    description: 'Directory for OpenSSL configuration files, and also the default certificate and key store.'
+    required: true
   build-type:
     description: 'can be "plain" or "minimal"'
     required: true
@@ -39,33 +45,33 @@ runs:
       shell: pwsh
       working-directory: openssl
       run: mkdir _build
-    
+
     - name: Configure, build and test plain
       shell: pwsh
       working-directory: openssl/_build
       if: ${{ inputs.build-type == 'plain' }}
       run: | 
-        perl ..\Configure --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
+        perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
         perl configdata.pm --dump
         nmake /S
         nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
+        nmake install
 
     - name: Configure, build and test minimal
       shell: pwsh
       working-directory: openssl/_build
       if: ${{ inputs.build-type == 'minimal' }}
       run: |
-        perl ..\Configure --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
+        perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
         perl configdata.pm --dump
         nmake
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
+        nmake install
 
-    # Set environment variable in windows
-    # https://www.jamescroft.co.uk/setting-github-actions-environment-variables-in-powershell/
-    - name: Set openssl path dir
-      id: built-openssl-path
-      shell: pwsh
-      working-directory: openssl/apps
-      run: |
-        $opensslPath = Get-Location
-        echo "built-openssl-path=$opensslPath" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+    #- name: Set openssl path dir
+    #  id: built-openssl-path
+    #  shell: pwsh
+    #  working-directory: openssl/apps
+    #  run: |
+    #    $opensslPath = Get-Location
+    #    echo "built-openssl-path=$opensslPath" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
