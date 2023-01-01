@@ -67,11 +67,3 @@ runs:
         nmake
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
         nmake install
-
-    #- name: Set openssl path dir
-    #  id: built-openssl-path
-    #  shell: pwsh
-    #  working-directory: openssl/apps
-    #  run: |
-    #    $opensslPath = Get-Location
-    #    echo "built-openssl-path=$opensslPath" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
