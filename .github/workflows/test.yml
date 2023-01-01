@@ -10,6 +10,9 @@ jobs:
         os: 
           - windows-2019
           - windows-2022
+        version:
+          - openssl-3.0.7
+          - openssl-3.1.0-beta1
 
     runs-on: ${{ matrix.os }}
 
@@ -35,6 +38,7 @@ jobs:
         id: build
         uses: ./
         with:
+          version: ${{ matrix.version }}
           prefix: ${{ steps.custom.outputs.prefix }}
           openssldir: ${{ steps.custom.outputs.openssldir }}
           build-type: ${{ matrix.build-type }}

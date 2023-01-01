@@ -12,6 +12,10 @@ name: 'Openssl Windows compiler action'
 description: 'Compiles the openssl from https://github.com/openssl/openssl to use openssl.exe as built-in executable on softwares that depends of it functionalities'
 
 inputs:
+  version:
+    description: "Choose a openssl version by github's tag"
+    required: false
+    default: 'openssl-3.0.7'
   prefix:
     description: 'The top of the installation directory tree'
     required: true
@@ -40,6 +44,13 @@ runs:
     - name: Clone openssl
       shell: pwsh
       run: git clone https://github.com/openssl/openssl.git
+    
+    - name: Checkout openssl at specific tag
+      shell: pwsh
+      working-directory: opensll
+      run: |
+        git fetch --all --tags
+        git checkout tags/${{ inputs.version }}
 
     - name: Prepare the build directory 
       shell: pwsh
