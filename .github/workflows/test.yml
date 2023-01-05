@@ -40,16 +40,6 @@ jobs:
           prefix: ${{ steps.custom.outputs.prefix }}
           openssldir: ${{ steps.custom.outputs.openssldir }}
           build-type: ${{ matrix.build-type }}
-
-      - name: Build openssl (shared type)
-        id: build
-        if: ${{ inputs.build-type != 'shared' }}
-        uses: ./
-        with:
-          version: ${{ matrix.version }}
-          prefix: ${{ steps.custom.outputs.prefix }}
-          openssldir: ${{ steps.custom.outputs.openssldir }}
-          build-type: ${{ matrix.build-type }}
           arch: ${{ matrix.arch }}
 
       - name: Check the existence of generated openssl.exe

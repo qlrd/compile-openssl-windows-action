@@ -28,6 +28,7 @@ inputs:
   arch: 
     description: 'when build-type input is "shared", this can be "win64" or "win32"'
     required: false
+    default: ''
 
 outputs:
   built-openssl-path:
