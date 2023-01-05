@@ -33,7 +33,6 @@ jobs:
 
       - name: Build openssl (not shared type)
         id: build
-        if: ${{ inputs.build-type != 'shared' }}
         uses: ./
         with:
           version: ${{ matrix.version }}
