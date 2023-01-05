@@ -4,15 +4,12 @@ jobs:
   test:
     strategy:
       matrix:
-        build-type:
-          - plain
-          - minimal
-        os: 
-          - windows-2019
-          - windows-2022
-        version:
-          - openssl-3.0.7
-          - openssl-3.1.0-beta1
+        build-type: [shared, plain, minimal]
+        os: [windows-2019, windows-2022]
+        version: [openssl-3.0.7, openssl-3.1.0-beta1]
+        include:
+          - build-type: shared
+            arch: [win64, win32]
 
     runs-on: ${{ matrix.os }}
 
@@ -34,14 +31,26 @@ jobs:
           mkdir ${{ steps.custom.outputs.prefix }}
           mkdir ${{ steps.custom.outputs.openssldir }}
 
-      - name: Build openssl
+      - name: Build openssl (not shared type)
         id: build
+        if: ${{ inputs.build-type != 'shared' }}
         uses: ./
         with:
           version: ${{ matrix.version }}
           prefix: ${{ steps.custom.outputs.prefix }}
           openssldir: ${{ steps.custom.outputs.openssldir }}
           build-type: ${{ matrix.build-type }}
+
+      - name: Build openssl (shared type)
+        id: build
+        if: ${{ inputs.build-type != 'shared' }}
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          prefix: ${{ steps.custom.outputs.prefix }}
+          openssldir: ${{ steps.custom.outputs.openssldir }}
+          build-type: ${{ matrix.build-type }}
+          arch: ${{ matrix.arch }}
 
       - name: Check the existence of generated openssl.exe
         shell: pwsh
@@ -56,3 +65,20 @@ jobs:
         run: |
           ${{ steps.custom.outputs.prefix }}\bin\openssl.exe rand -hex 16
           ${{ steps.custom.outputs.prefix }}\bin\openssl.exe rand -base64 16
+
+      - name: Pre-test functionality III
+        shell: pwsh
+        run: |
+          $loc = Get-Location
+          Add-Content -path $loc\data.txt -value "Hello World"
+          Compress-Archive -LiteralPath '$loc\data.txt' -DestinationPath '$loc\data.zip'
+
+      - name: Test functionality III (generate keypair, sign and verify binary data)
+        shell: cmd
+        run: |
+          $loc = Get-Location
+          ${{ steps.custom.outputs.prefix }}\bin\openssl.exe ecparam -name secp256k1 -conv_form compressed -genkey -noout -out $loc\privkey.pem
+          ${{ steps.custom.outputs.prefix }}\bin\openssl.exe ec -in $loc\privkey.pem -pubout -out $loc\pubkey.pem
+          ${{ steps.custom.outputs.prefix }}\bin\openssl.exe dgst -sign $loc\privkey.pem -keyform PEM -sha256 -out $loc\data.zip.sig -binary $loc\data.zip
+          ${{ steps.custom.outputs.prefix }}\bin\openssl.exe sha256 <$loc\data.zip -binary | ${{ steps.custom.outputs.prefix }}\bin\openssl.exe pkeyutl -verify -pubin -inkey $loc\pubkey.pem -sigfile $loc\data.zip.sig
+
