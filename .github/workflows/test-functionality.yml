@@ -1,0 +1,46 @@
+name: Setup the openssl folders
+
+on:
+  workflow_call:
+    
+    inputs:
+      os: 
+        description: The os to be used on this workflow
+        type: string
+        required: true
+        required: true
+      openssl:
+        description: The full path of the "openssl"
+        type: string
+        required: true
+    
+jobs:
+  name: test
+  runs-on: ${{ inputs.os }}
+  steps:
+  
+
+    - name: Check the existence of generated openssl.exe
+      shell: pwsh
+      run: ls ${{ inputs.openssl }}
+    
+    - name: Test functionality I (get version)
+      shell: pwsh
+      run: ${{ inputs.openssl }} version
+      
+    - name: Test functionality II (generate hex and base64 strings)
+      shell: pwsh
+      run: |
+        ${{ inputs.openssl }} rand -hex 16
+        ${{ inputs.openssl }} rand -base64 16
+
+    - name: Test functionality III (generate keypair, sign and verify binary data with EC algorithm)
+      shell: pwsh
+      run: |
+        $loc = Get-Location
+        Add-Content -path $loc\data.txt -value "Hello World EC"
+        Compress-Archive -LiteralPath '$loc\data.txt' -DestinationPath '$loc\data.zip'
+        ${{ inputs.openssl }} ecparam -name secp256k1 -conv_form compressed -genkey -noout -out $loc\privkey.pem
+        ${{ inputs.openssl }} ec -in $loc\privkey.pem -pubout -out $loc\pubkey.pem
+        ${{ inputs.openssl }} dgst -sign $loc\privkey.pem -keyform PEM -sha256 -out $loc\data.zip.sig -binary $loc\data.zip
+        ${{ inputs.openssl }} sha256 <$loc\data.zip -binary | ${{ inputs.openssl }} pkeyutl -verify -pubin -inkey $loc\pubkey.pem -sigfile $loc\data.zip.sig

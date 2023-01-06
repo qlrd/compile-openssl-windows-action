@@ -1,0 +1,56 @@
+on: [push]
+
+jobs:
+  shared:
+    strategy: 
+      matrix:
+        build-type: 
+          - shared
+        os: 
+          - windows-2019
+          - windows-2022
+        version:
+          - openssl-3.0.7
+          - openssl-3.1.0-beta1
+        arch:
+          - win64
+          - win32
+
+    runs-on: ${{ matrix.os }}
+    steps: 
+
+      - name: Checkout
+        uses: actions/checkout@v3
+     
+      - name: Init vendor dir
+        id: init
+        shell: pwsh
+        run: |
+          $here = Get-Location
+          mkdir $here\vendor
+          echo "rootdir=$here\vendor" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Setup the openssl folders
+        id: setup
+        uses: qlrd/compile-openssl-windows-action/.github/workflows/set-openssl-folders.yml@main
+        with:
+          os: ${{ matrix.os }}
+          rootdir: ${{ steps.init.outputs.rootdir }}
+          prefix-name: OpenSSL
+          openssldir-name: SharedFiles
+
+      - name: Build openssl (shared type)
+        id: build
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          prefix: ${{ steps.setup.outputs.prefix }}
+          openssldir: ${{ steps.setup.outputs.openssldir }}
+          build-type: ${{ matrix.build-type }}
+          arch: ${{ matrix.arch }}
+
+      - name: Test openssl
+        uses: qlrd/compile-openssl-windows-action/.github/workflows/test-functionality.yml@main
+        with:
+          os: ${{ matrix.os }} 
+          openssl: ${{ steps.setup.outputs.prefix }}\bin\openssl.exe
