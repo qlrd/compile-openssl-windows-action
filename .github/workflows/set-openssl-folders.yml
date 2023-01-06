@@ -30,27 +30,27 @@ on:
         value: ${{ jobs.setup.outputs.openssldir }}
 
 jobs:
-  name: setup
-  runs-on: ${{ inputs.os }}
-  outputs: 
-    prefix: ${{ steps.set-prefix.outputs.prefix }}
-    openssldir: ${{ steps.set-openssldir.outputs.openssl }}
 
-  steps:
+  setup:
+    runs-on: ${{ inputs.os }}
+    outputs: 
+      prefix: ${{ steps.set-prefix.outputs.prefix }}
+      openssldir: ${{ steps.set-openssldir.outputs.openssl }}
+
+    steps:
     
-    - id: set-prefix
-      shell: pwsh
-      run: echo "prefix=${{ inputs.rootdir }}\${{ inputs.prefix-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - id: set-prefix
+        shell: pwsh
+        run: echo "prefix=${{ inputs.rootdir }}\${{ inputs.prefix-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-    - id: set-openssldir
-      shell: pwsh
-      run: echo "openssldir=${{ inputs.rootdir }}\${{ inputs.openssldir-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - id: set-openssldir
+        shell: pwsh
+        run: echo "openssldir=${{ inputs.rootdir }}\${{ inputs.openssldir-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-    - id: make-prefix
-      shell: pwsh
-      run: mkdir ${{ steps.set-prefix.outputs.prefix }}
+      - id: make-prefix
+        shell: pwsh
+        run: mkdir ${{ steps.set-prefix.outputs.prefix }}
 
-    - id: make-openssldir
-      shell: pwsh
-      run: mkdir ${{ steps.set-openssldir.outputs.openssldir }}
-
+      - id: make-openssldir
+        shell: pwsh
+        run: mkdir ${{ steps.set-openssldir.outputs.openssldir }}
