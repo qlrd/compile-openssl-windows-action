@@ -80,7 +80,7 @@ runs:
       if: ${{ inputs.build-type == 'shared' && inputs.arch == 'win64' }}
       run: |
         perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend enable-fips enable-quic
-        perl configdata.pm --dump
+        perl ..\configdata.pm --dump
         nmake /S
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
         nmake install
@@ -91,7 +91,7 @@ runs:
       if: ${{ inputs.build-type == 'shared' && inputs.arch == 'win32' }}
       run: |
         perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend --strict-warnings enable-fips enable-quic
-        perl configdata.pm --dump
+        perl ..\configdata.pm --dump
         nmake /S
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
         nmake install
@@ -102,7 +102,7 @@ runs:
       if: ${{ inputs.build-type == 'plain' }}
       run: | 
         perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend no-shared no-fips VC-WIN64A-masm
-        perl configdata.pm --dump
+        perl ..\configdata.pm --dump
         nmake /S
         nmake test VERBOSE_FAILURE=yes HARNESS_JOBS=4
         nmake install
@@ -113,7 +113,7 @@ runs:
       if: ${{ inputs.build-type == 'minimal' }}
       run: |
         perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend no-bulk no-deprecated no-fips no-asm -DOPENSSL_SMALL_FOOTPRINT
-        perl configdata.pm --dump
+        perl ..\configdata.pm --dump
         nmake
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
         nmake install
