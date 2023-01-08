@@ -51,7 +51,7 @@ jobs:
           echo "prefix=$here\${{ inputs.rootdir }}\${{ inputs.prefix-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "openssldir=$here\${{ inputs.rootdir }}\${{ inputs.openssldir-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
           echo "openssl=$here\${{ inputs.rootdir }}\${{ inputs.prefix-name }}\bin\openssl.exe" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
-          echo "data=$here\data.txt" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encodgin utf8 -Append
+          echo "data=$here\data.txt" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "zip=$here\data.zip" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
           echo "privkey=$here\privkey.pem" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "pubkey=$here\pubkey.pem" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
