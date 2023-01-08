@@ -47,7 +47,6 @@ jobs:
         shell: pwsh
         run: |
           $here = Get-Location 
-          echo "source=$here\openssl" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "rootdir=$here\${{ inputs.rootdir }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "prefix=$here\${{ inputs.rootdir }}\${{ inputs.prefix-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           echo "openssldir=$here\${{ inputs.rootdir }}\${{ inputs.openssldir-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 

@@ -30,11 +30,6 @@ inputs:
     required: false
     default: ''
 
-outputs:
-  built-openssl-path:
-    description: 'path where the built openssl is located'
-    value: ${{ steps.built-openssl-path.outputs.built-openssl-path }}
-
 runs:
   using: 'composite'
   steps:
@@ -75,9 +70,9 @@ runs:
       run: mkdir _build
 
     - name: Configure, build and test shared for win64
-      shell: pwsh
-      working-directory: openssl/_build
+      shell: pwsh 
       if: ${{ inputs.build-type == 'shared' && inputs.arch == 'win64' }}
+      working-directory: openssl/_build
       run: |
         perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend enable-fips enable-quic
         perl configdata.pm --dump
@@ -90,7 +85,7 @@ runs:
       working-directory: openssl/_build
       if: ${{ inputs.build-type == 'shared' && inputs.arch == 'win32' }}
       run: |
-        perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend --strict-warnings enable-fips enable-quic
+        perl ..\Configure --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.openssldir }} --banner=Configured no-makedepend --strict-warnings no-fips enable-quic
         perl configdata.pm --dump
         nmake /S
         nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4

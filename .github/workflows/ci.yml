@@ -7,7 +7,7 @@ jobs:
       matrix: 
         build-type: [shared]
         os: [windows-2019, windows-2022]
-        version: [openssl-3.0.7, openssl-3.1.0-beta1]
+        version: [openssl-3.0.7]
         arch: [win32, win64]
     uses: qlrd/compile-openssl-windows-action/.github/workflows/reusable.yml@main
     with:
