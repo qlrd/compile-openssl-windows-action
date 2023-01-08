@@ -2,22 +2,22 @@ on: [push]
 
 jobs:
   
-  shared:
-    strategy:
-      matrix: 
-        build-type: [shared]
-        os: [windows-2019, windows-2022]
-        version: [openssl-3.0.7]
-        arch: [win32, win64]
-    uses: qlrd/compile-openssl-windows-action/.github/workflows/reusable.yml@main
-    with:
-      build-type: ${{ matrix.build-type }}
-      os: ${{ matrix.os }}
-      version: ${{ matrix.version }}
-      arch: ${{ matrix.arch }}
-      rootdir: shared-vendor
-      prefix-name: OpenSSL
-      openssldir-name: SharedFiles
+  #shared:
+  #  strategy:
+  #    matrix: 
+  #      build-type: [shared]
+  #      os: [windows-2019, windows-2022]
+  #      version: [openssl-3.0.7]
+  #      arch: [win32, win64]
+  #  uses: qlrd/compile-openssl-windows-action/.github/workflows/reusable.yml@main
+  #  with:
+  #    build-type: ${{ matrix.build-type }}
+  #    os: ${{ matrix.os }}
+  #    version: ${{ matrix.version }}
+  #    arch: ${{ matrix.arch }}
+  #    rootdir: shared-vendor
+  #    prefix-name: OpenSSL
+  #    openssldir-name: SharedFiles
 
 
   plain:
