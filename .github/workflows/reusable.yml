@@ -77,7 +77,7 @@ jobs:
           build-type: ${{ inputs.build-type }}
           version: ${{ inputs.version }}
           prefix: ${{ steps.init.outputs.prefix }}
-          openssldir: ${{ steps.initoutputs.openssldir }}
+          openssldir: ${{ steps.init.outputs.openssldir }}
           arch: ${{ inputs.arch }}
 
       - name: Build openssl (no-shared type)
