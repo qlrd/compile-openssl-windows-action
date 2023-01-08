@@ -109,7 +109,7 @@ jobs:
           
       - name: Test functionality III (generate private EC key)
         shell: pwsh
-        run: ${{ steps.init.outputs.openssl }} ecparam -name secp256k1 -conv_form compressed -genkey -noout -out ${{ steps.init.output.privkey }}
+        run: ${{ steps.init.outputs.openssl }} ecparam -name secp256k1 -conv_form compressed -genkey -noout -out ${{ steps.init.outputs.privkey }}
         
       - name: Test functionality IV (generate public EC key)
         shell: pwsh
