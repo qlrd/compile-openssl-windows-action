@@ -106,22 +106,22 @@ jobs:
           ${{ steps.init.outputs.openssl }} rand -hex 16
           ${{ steps.init.outputs.openssl }} rand -base64 16
           
-      - name: Test functionality III (generate private EC key)
+      - name: Test functionality III (generate private EC key) 
+        if: ${{ inputs.build-type != 'minimal' }}
         shell: pwsh
-        if: ${{ steps.init.outputs.openssl != 'minimal' }}
         run: ${{ steps.init.outputs.openssl }} ecparam -name secp256k1 -conv_form compressed -genkey -noout -out ${{ steps.init.outputs.privkey }}
         
-      - name: Test functionality IV (generate public EC key)
+      - name: Test functionality IV (generate public EC key)  
+        if: ${{ inputs.build-type != 'minimal' }}
         shell: pwsh
-        if: ${{ steps.init.outputs.openssl != 'minimal' }}
         run: ${{ steps.init.outputs.openssl }} ec -in ${{ steps.init.outputs.privkey }} -pubout -out ${{ steps.init.outputs.pubkey }}
         
-      - name: Test functionality V (sign zip file with EC key)
+      - name: Test functionality V (sign zip file with EC key) 
+        if: ${{ inputs.build-type != 'minimal' }}
         shell: pwsh
-        if: ${{ steps.init.outputs.openssl != 'minimal' }}
         run: ${{ steps.init.outputs.openssl }} dgst -sign ${{ steps.init.outputs.privkey }} -keyform PEM -sha256 -out ${{ steps.init.outputs.sig }} -binary ${{ steps.init.outputs.zip }}
         
-      - name: Test functionality VI (verify signature with EC key) 
-        if: ${{ steps.init.outputs.openssl != 'minimal' }}
+      - name: Test functionality VI (verify signature with EC key)  
+        if: ${{ inputs.build-type != 'minimal' }}
         shell: cmd
         run: ${{ steps.init.outputs.openssl }} sha256 <${{ steps.init.outputs.zip }} -binary | ${{ steps.init.outputs.openssl }} pkeyutl -verify -pubin -inkey ${{ steps.init.outputs.pubkey }} -sigfile ${{ steps.init.outputs.sig }}
