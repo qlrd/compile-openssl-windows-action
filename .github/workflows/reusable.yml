@@ -1,0 +1,124 @@
+name: Test compilation on fresh openssl build
+
+on:
+  workflow_call:
+    
+    inputs:
+      build-type:
+        description: "The build type ('shared', 'plain' or 'minimal')"
+        type: string
+        required: true
+      os: 
+        description: The os to be used on this workflow
+        type: string
+        required: true
+      version:
+        description: The specific git version tag to be cloned
+        type: string
+        required: true
+      arch:
+        description: "If 'build-type' is 'shared', this value can be 'win32' or 'win64'"
+        type: string
+        required: false
+      rootdir:
+        description: The root directory where the folders will be placed
+        type: string
+        required: true
+      prefix-name:
+        description: The name of the "prefix" folder
+        type: string
+        required: true
+      openssldir-name:
+        description: The name of the "openssl" folder
+        type: string
+        required: true
+    
+jobs:
+  reusable:
+    runs-on: ${{ inputs.os }}
+
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Init paths
+        id: init
+        shell: pwsh
+        run: |
+          $here = Get-Location
+          echo "rootdir=$here\${{ inputs.rootdir }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "prefix=$here\${{ inputs.rootdir }}\${{ inputs.prefix-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "openssldir=$here\${{ inputs.rootdir }}\${{ inputs.openssldir-name }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
+          echo "openssl=$here\${{ inputs.rootdir }}\${{ inputs.prefix-name }}\bin\openssl.exe" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "data=$here\data.txt" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encodgin utf8 -Append
+          echo "zip=$here\data.zip" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
+          echo "privkey=$here\privkey.pem" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "pubkey=$here\pubkey.pem" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append 
+          echo "sig=$here\data.zip.sig" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+      
+      - name: Setup directories
+        shell: pwsh
+        run: |
+          mkdir ${{ steps.init.outputs.rootdir }}
+          mkdir ${{ steps.init.outputs.prefix }}
+          mkdir ${{ steps.init.outputs.openssldir }}
+
+      - name: Create zip binary
+        shell: pwsh 
+        run: |
+          Add-Content -path ${{ steps.init.outputs.data }} -value "Hello World EC"
+          Compress-Archive -LiteralPath '${{ steps.init.outputs.data }} ' -DestinationPath '${{ steps.init.outputs.zip }}'
+
+      - name: Build openssl (shared type)
+        if: ${{ inputs.build-type == 'shared' }}
+        uses: ./
+        with: 
+          build-type: ${{ inputs.build-type }}
+          version: ${{ inputs.version }}
+          prefix: ${{ steps.setup.outputs.prefix }}
+          openssldir: ${{ steps.setup.outputs.openssldir }}
+          arch: ${{ inputs.arch }}
+
+      - name: Build openssl (no-shared type)
+        if: ${{ inputs.build-type != 'shared' }}
+        uses: ./
+        with: 
+          build-type: ${{ inputs.build-type }}
+          version: ${{ inputs.version }}
+          prefix: ${{ steps.setup.outputs.prefix }}
+          openssldir: ${{ steps.setup.outputs.openssldir }}
+
+      - name: Check the existence of generated openssl.exe
+        shell: pwsh
+        run: | 
+          ls ${{ steps.init.outputs.prefix }}
+          ls ${{ steps.init.outputs.openssldir }}
+          ls ${{ steps.init.outputs.openssl }}
+    
+      - name: Test functionality I (get version)
+        shell: pwsh
+        run: ${{ steps.init.outputs.openssl }} version
+      
+      - name: Test functionality II (generate hex and base64 strings)
+        shell: pwsh
+        run: |
+          ${{ steps.init.outputs.openssl }} rand -hex 16
+          ${{ steps.init.outputs.openssl }} rand -base64 16
+
+          
+      - name: Test functionality III (generate private EC key)
+        shell: pwsh
+        run: ${{ steps.init.outputs.openssl }} ecparam -name secp256k1 -conv_form compressed -genkey -noout -out ${{ steps.init.output.privkey }}
+        
+      - name: Test functionality IV (generate public EC key)
+        shell: pwsh
+        run: ${{ steps.init.outputs.openssl }} ec -in ${{ steps.init.outputs.privkey }} -pubout -out ${{ steps.init.outputs.pubkey }}
+        
+      - name: Test functionality V (sign zip file)
+        shell: pwsh 
+        run: ${{ steps.init.outputs.openssl }} dgst -sign ${{ steps.init.outputs.privkey }} -keyform PEM -sha256 -out ${{ steps.init.outputs.sig }} -binary ${{ steps.init.outputs.zip }}
+        
+      - name: Test functionality VI (verify signature)
+        shell: cmd
+        run: ${{ steps.init.outputs.openssl }} sha256 <${{ steps.init.outputs.zip }} -binary | ${{ steps.init.outputs.openssl }} pkeyutl -verify -pubin -inkey ${{ steps.init.outputs.pubkey }} -sigfile ${{ steps.init.outputs.sig }}
